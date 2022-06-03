@@ -140,10 +140,10 @@ int main()
 			time++;
 			refrigerator.Output_State(is_open,weight);
 			if(glfwGetKey(window, GLFW_KEY_O))is_open = !is_open;
-			if(glfwGetKey(window, GLFW_KEY_W))weight+=100;
+			if(glfwGetKey(window, GLFW_KEY_W))weight+=10;
 			if (glfwGetKey(window, GLFW_KEY_S))
 			{
-				if (weight >= 100)weight -= 100;
+				if (weight >= 10)weight -= 10;
 				else weight = 0;
 			}
 		}
