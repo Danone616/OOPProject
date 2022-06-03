@@ -7,26 +7,30 @@
 #include"VAO.h"
 #include"VBO.h"
 #include"EBO.h"
+#include"Refrigerator.h"
 
 GLfloat func(GLfloat x)
 {
-	return (GLfloat)(sin(x));
+	return (GLfloat)(pow(1.15,x)*sin(x*8));
 }
 const int numberofpoints = 100;
 GLfloat vertices[6 * numberofpoints];
 int main()
 {
 
-	// Vertices coordinates
-
-
+	double Enviroment_temperature = 25;
+	Compressor compressor = Compressor(10, 1, 0, -60);
+	Electric_Engine electric_Engine = Electric_Engine(10, 1, 0);
+	Thermoregulator thermoregulator = Thermoregulator(Enviroment_temperature);
+	Processing_Unit processor = Processing_Unit(1, 0);
+	Refrigerator refrigerator = Refrigerator(electric_Engine, compressor, thermoregulator, processor, 200, 40, 50, 1000, 0.8);
 	
 	GLfloat valuelimitx = 10.0f,step = (valuelimitx * 2) / numberofpoints;
-	GLfloat valuelimity = 5.0f;
+	GLfloat valuelimity = 30.0f;
 	for (int c = 0; c < numberofpoints; c++)
 	{
 		vertices[c * 6] = (- valuelimitx + c * step)/(valuelimitx*2);
-		vertices[c * 6+1] = func(-valuelimitx + c * step) / (valuelimity * 2);
+		vertices[c * 6+1] = (GLfloat)(refrigerator.thermoregulator.Get_Temperature()) / (valuelimity * 2);
 		vertices[c * 6+2] = 0.0f;
 		vertices[c * 6+3] = 1.0f;
 		vertices[c * 6+4] = 1.0f;
@@ -82,14 +86,14 @@ int main()
 	0.0f
 	};
 	GLfloat Yaxis[12] = {
-		0.0f,
+		-0.49f,
 		-0.5f,
 		0.0f,
 		1.0f,
 		0.0f,
 		0.0f,
 
-		0.0f,
+		-0.49f,
 		0.5f,
 		0.0f,
 		1.0f,
@@ -124,13 +128,15 @@ int main()
 	while (!glfwWindowShouldClose(window))
 	{
 		framecount++;
-		if (framecount % 10 == 0) {
+		if (framecount % 5 == 0) {
+			refrigerator.Update_Refrigerator(false, 0, Enviroment_temperature, 1);
 			for (int c = 0; c < numberofpoints - 1; c++)
 			{
 				vertices[c * 6 + 1] = vertices[(c + 1) * 6 + 1];
 			}
-			vertices[(numberofpoints - 1) * 6 + 1] = func(valuelimitx + step * time) / (valuelimity * 2);
+			vertices[(numberofpoints - 1) * 6 + 1] = (GLfloat)(refrigerator.thermoregulator.Get_Temperature()) / (valuelimity * 2);
 			time++;
+			refrigerator.Output_State();
 		}
 		VAO VAO1;
 		VAO1.Bind();

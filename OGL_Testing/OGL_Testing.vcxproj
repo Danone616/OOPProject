@@ -145,11 +145,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Compressor.cpp" />
     <ClCompile Include="EBO.cpp" />
+    <ClCompile Include="Electric_Engine.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Processing_Unit.cpp" />
+    <ClCompile Include="Refrigerator.cpp" />
     <ClCompile Include="Shaders.cpp" />
     <ClCompile Include="stb.cpp" />
+    <ClCompile Include="Thermoregulator.cpp" />
     <ClCompile Include="VAO.cpp" />
     <ClCompile Include="VBO.cpp" />
   </ItemGroup>
@@ -160,8 +165,13 @@
     <Text Include="default.frag" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Compressor.h" />
     <ClInclude Include="EBO.h" />
+    <ClInclude Include="Electric_Engine.h" />
     <ClInclude Include="Libraries\include\stb\stb_image.h" />
+    <ClInclude Include="Processing_Unit.h" />
+    <ClInclude Include="Refrigerator.h" />
+    <ClInclude Include="Thermoregulator.h" />
     <ClInclude Include="VAO.h" />
     <ClInclude Include="VBO.h" />
     <ClInclude Include="Shaders.h" />

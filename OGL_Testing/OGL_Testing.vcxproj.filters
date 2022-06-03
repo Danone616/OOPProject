@@ -19,6 +19,12 @@
     <Filter Include="Файлы ресурсов\Textures">
       <UniqueIdentifier>{95e0613a-ce07-4397-8e8a-f3c7de00c1d2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Файлы заголовков\Components">
+      <UniqueIdentifier>{0282e6e3-d62c-4f83-bbc2-c2f41f0fc686}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\Components">
+      <UniqueIdentifier>{060e44ec-1abb-405f-8054-b297022263d9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="glad.c">
@@ -41,6 +47,21 @@
     </ClCompile>
     <ClCompile Include="stb.cpp">
       <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="Compressor.cpp">
+      <Filter>Исходные файлы\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Electric_Engine.cpp">
+      <Filter>Исходные файлы\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Processing_Unit.cpp">
+      <Filter>Исходные файлы\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Thermoregulator.cpp">
+      <Filter>Исходные файлы\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Refrigerator.cpp">
+      <Filter>Исходные файлы\Components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -68,6 +89,21 @@
     </ClInclude>
     <ClInclude Include="Libraries\include\stb\stb_image.h">
       <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="Compressor.h">
+      <Filter>Файлы заголовков\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Electric_Engine.h">
+      <Filter>Файлы заголовков\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Processing_Unit.h">
+      <Filter>Файлы заголовков\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Thermoregulator.h">
+      <Filter>Файлы заголовков\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Refrigerator.h">
+      <Filter>Файлы заголовков\Components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
