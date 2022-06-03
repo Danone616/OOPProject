@@ -23,7 +23,7 @@ Refrigerator::Refrigerator(Electric_Engine newengine, Compressor newcompressor, 
 double Refrigerator::Update_Refrigerator(bool Is_Open, double Item_Weight, double Enviroment_temperature, double Enviroment_Speed)
 {
     double transfer_coeficient;
-    double timestep = 0.01;
+    double timestep = 0.1;
     if (Is_Open) transfer_coeficient = 1;
     else transfer_coeficient = (1 - this->isolation.Get_Quality());
 
@@ -34,6 +34,8 @@ double Refrigerator::Update_Refrigerator(bool Is_Open, double Item_Weight, doubl
     double Target = processor.Get_Target_Temperature();
     double Current = thermoregulator.Get_Temperature();
 
+    if (this->processor.Get_State())Target -= 2;
+
     if (Target > Current)
     {
         double Cold = 0;
@@ -42,19 +44,20 @@ double Refrigerator::Update_Refrigerator(bool Is_Open, double Item_Weight, doubl
 
         double Change = (Cold + Warm + Hot) / (TotalWeight + (TotalWeight * Enviroment_Speed * transfer_coeficient));
 
-        thermoregulator.Set_Temperature(Change);
+        this->processor.Set_State(false);
+        thermoregulator.Set_Temperature((9 * Current + Change) / 10);
         return 0;
     }
     else
     {
-        double Cold = (Speed * compressor.Get_Minimal_Temperature())*timestep;
+        double Cold = (Speed * compressor.Get_Minimal_Temperature());
         double Warm = TotalWeight * Current;
-        double Hot = (TotalWeight * Enviroment_Speed * transfer_coeficient * Enviroment_temperature)*timestep;
+        double Hot = (TotalWeight * Enviroment_Speed * transfer_coeficient * Enviroment_temperature);
 
         double Change = (Cold + Warm + Hot) / (Speed + TotalWeight + (TotalWeight * Enviroment_Speed * transfer_coeficient));
 
-        thermoregulator.Set_Temperature(Change);
-
+        thermoregulator.Set_Temperature((9 * Current + Change) / 10);
+        this->processor.Set_State(true);
         return Power;
     }
 }

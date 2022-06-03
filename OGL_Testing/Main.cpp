@@ -26,7 +26,7 @@ int main()
 	Refrigerator refrigerator = Refrigerator(electric_Engine, compressor, thermoregulator, processor, 200, 40, 50, 1000, 0.8);
 	
 	GLfloat valuelimitx = 10.0f,step = (valuelimitx * 2) / numberofpoints;
-	GLfloat valuelimity = 30.0f;
+	GLfloat valuelimity = 5.0f;
 	for (int c = 0; c < numberofpoints; c++)
 	{
 		vertices[c * 6] = (- valuelimitx + c * step)/(valuelimitx*2);
@@ -123,20 +123,29 @@ int main()
 	VBOY.Unbind();
 	// Main while loop
 	int time=0;
+	double weight = 0;
+	bool is_open = false;
 	int framecount = 0;
 	const GLfloat timestep = 0.001f;
 	while (!glfwWindowShouldClose(window))
 	{
 		framecount++;
 		if (framecount % 5 == 0) {
-			refrigerator.Update_Refrigerator(false, 0, Enviroment_temperature, 1);
+			refrigerator.Update_Refrigerator(is_open, weight, Enviroment_temperature, 1);
 			for (int c = 0; c < numberofpoints - 1; c++)
 			{
 				vertices[c * 6 + 1] = vertices[(c + 1) * 6 + 1];
 			}
 			vertices[(numberofpoints - 1) * 6 + 1] = (GLfloat)(refrigerator.thermoregulator.Get_Temperature()) / (valuelimity * 2);
 			time++;
-			refrigerator.Output_State();
+			refrigerator.Output_State(is_open,weight);
+			if(glfwGetKey(window, GLFW_KEY_O))is_open = !is_open;
+			if(glfwGetKey(window, GLFW_KEY_W))weight+=100;
+			if (glfwGetKey(window, GLFW_KEY_S))
+			{
+				if (weight >= 100)weight -= 100;
+				else weight = 0;
+			}
 		}
 		VAO VAO1;
 		VAO1.Bind();
