@@ -80,8 +80,8 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\Danone\source\repos\OGL_Testing\OGL_Testing\Libraries\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\Users\Danone\source\repos\OGL_Testing\OGL_Testing\Libraries\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\danyl\source\repos\Danone616\OOPProject\OGL_Testing\Libraries\include;$(IncludePath)</IncludePath>
+    <LibraryPath>C:\Users\danyl\source\repos\Danone616\OOPProject\OGL_Testing\Libraries\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
