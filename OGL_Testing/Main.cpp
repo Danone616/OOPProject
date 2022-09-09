@@ -2,6 +2,7 @@
 #include<glad/glad.h>
 #include<GLFW/glfw3.h>
 #include<stb/stb_image.h>
+#include<cmath> 
 
 #include"Shaders.h"
 #include"VAO.h"
@@ -10,9 +11,25 @@
 
 GLfloat func(GLfloat x)
 {
-	return (GLfloat)(sin(x));
+	return (GLfloat)(sin(40* x));
 }
-const int numberofpoints = 100;
+
+GLfloat red(GLfloat time)
+{
+	return (sin(time)*sin(time) + 1) / 2.0f;
+}
+GLfloat green(GLfloat time)
+{
+	return (sin(time+ (3.14f/3)     )* sin(time + (3.14f / 3)) + 1) / 2.0f;
+}
+GLfloat blue(GLfloat time)
+{
+	return (sin(time+ (3.14f*2 / 3) )* sin(time + (3.14f*2 / 3)) + 1) / 2.0f;
+}
+
+
+
+const int numberofpoints = 1000;
 GLfloat vertices[6 * numberofpoints];
 int main()
 {
@@ -22,7 +39,7 @@ int main()
 
 	
 	GLfloat valuelimitx = 10.0f,step = (valuelimitx * 2) / numberofpoints;
-	GLfloat valuelimity = 5.0f;
+	GLfloat valuelimity = 0.5f;
 	for (int c = 0; c < numberofpoints; c++)
 	{
 		vertices[c * 6] = (- valuelimitx + c * step)/(valuelimitx*2);
@@ -42,7 +59,7 @@ int main()
 	// So that means we only have the modern functions
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	GLFWwindow* window = glfwCreateWindow(700, 700, "Test", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(1920, 1080, "Test", NULL, NULL);
 	// Error check if the window fails to create
 	if (window == NULL)
 	{
@@ -57,7 +74,7 @@ int main()
 	gladLoadGL();
 	// Specify the viewport of OpenGL in the Window
 	// In this case the viewport goes from x = 0, y = 0, to x = 800, y = 800
-	glViewport(50, 50, 600, 600);
+	glViewport(50, 50, 1800, 1000);
 
 
 
@@ -120,7 +137,7 @@ int main()
 	// Main while loop
 	int time=0;
 	int framecount = 0;
-	const GLfloat timestep = 0.001f;
+	const GLfloat timestep = 0.02f;
 	while (!glfwWindowShouldClose(window))
 	{
 		framecount++;
@@ -128,8 +145,15 @@ int main()
 			for (int c = 0; c < numberofpoints - 1; c++)
 			{
 				vertices[c * 6 + 1] = vertices[(c + 1) * 6 + 1];
+				vertices[c * 6 + 3] = vertices[(c + 1) * 6 + 3];
+				vertices[c * 6 + 4] = vertices[(c + 1) * 6 + 4];
+				vertices[c * 6 + 5] = vertices[(c + 1) * 6 + 5];
 			}
 			vertices[(numberofpoints - 1) * 6 + 1] = func(valuelimitx + step * time) / (valuelimity * 2);
+			vertices[(numberofpoints - 1) * 6 + 3] = red(time*timestep);
+			vertices[(numberofpoints - 1) * 6 + 4] = green(time * timestep);
+			vertices[(numberofpoints - 1) * 6 + 5] = blue(time * timestep);
+
 			time++;
 		}
 		VAO VAO1;
@@ -154,15 +178,19 @@ int main()
 		// Assigns a value to the uniform; NOTE: Must always be done after activating the Shader Program
 		glUniform1f(uniID, 1.0f);
 		// Bind the VAO so OpenGL knows to use it
-		VAOX.Bind();
+		/*VAOX.Bind();
 		glDrawArrays(GL_LINE_STRIP, 0, 2);
 		VAOX.Unbind();
 		VAOY.Bind();
 		glDrawArrays(GL_LINE_STRIP, 0, 2);
-		VAOY.Unbind();
+		VAOY.Unbind();*/
 		VAO1.Bind();
 		glDrawArrays(GL_LINE_STRIP, 0, numberofpoints);
 		VAO1.Unbind();
+
+		VAO1.Delete();
+		VBO1.Delete();
+
 		// Swap the back buffer with the front buffer
 		glfwSwapBuffers(window);
 		// Take care of all GLFW events
