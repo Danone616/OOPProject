@@ -11,25 +11,25 @@
 
 GLfloat func(GLfloat x)
 {
-	return (GLfloat)(sin(40* x));
+	return (GLfloat)(sin(cos(x)));
 }
 
 GLfloat red(GLfloat time)
 {
-	return (sin(time)*sin(time) + 1) / 2.0f;
+	return (sin(time) * sin(time) + 1) / 2.0f;
 }
 GLfloat green(GLfloat time)
 {
-	return (sin(time+ (3.14f/3)     )* sin(time + (3.14f / 3)) + 1) / 2.0f;
+	return (sin(time/sqrt(2)+ (3.14f/3)     )* sin(time / sqrt(2) + (3.14f / 3)) + 1) / 2.0f;
 }
 GLfloat blue(GLfloat time)
 {
-	return (sin(time+ (3.14f*2 / 3) )* sin(time + (3.14f*2 / 3)) + 1) / 2.0f;
+	return (sin(time / sqrt(3) + (3.14f*2 / 3) )* sin(time / sqrt(3) + (3.14f*2 / 3)) + 1) / 2.0f;
 }
 
 
 
-const int numberofpoints = 1000;
+const int numberofpoints = 5000;
 GLfloat vertices[6 * numberofpoints];
 int main()
 {
@@ -38,8 +38,8 @@ int main()
 
 
 	
-	GLfloat valuelimitx = 10.0f,step = (valuelimitx * 2) / numberofpoints;
-	GLfloat valuelimity = 0.5f;
+	GLfloat valuelimitx = 3*3.14,step = (valuelimitx * 2) / numberofpoints;
+	GLfloat valuelimity = 1.0f;
 	for (int c = 0; c < numberofpoints; c++)
 	{
 		vertices[c * 6] = (- valuelimitx + c * step)/(valuelimitx*2);
@@ -138,10 +138,11 @@ int main()
 	int time=0;
 	int framecount = 0;
 	const GLfloat timestep = 0.02f;
+	const int number_of_waves = 3;
 	while (!glfwWindowShouldClose(window))
 	{
 		framecount++;
-		if (framecount % 10 == 0) {
+		if (framecount % 2 == 0) {
 			for (int c = 0; c < numberofpoints - 1; c++)
 			{
 				vertices[c * 6 + 1] = vertices[(c + 1) * 6 + 1];
@@ -185,7 +186,17 @@ int main()
 		glDrawArrays(GL_LINE_STRIP, 0, 2);
 		VAOY.Unbind();*/
 		VAO1.Bind();
-		glDrawArrays(GL_LINE_STRIP, 0, numberofpoints);
+		int currentpos = 0;
+		for (int i = 0; i < number_of_waves; i++)
+		{
+			/*vertices[currentpos * 6 + 3] = 1.0f;
+			vertices[currentpos * 6 + 4] = 1.0f;
+			vertices[currentpos * 6 + 5] = 1.0f;*/
+			glDrawArrays(GL_TRIANGLE_FAN, currentpos, (numberofpoints / number_of_waves ));
+			currentpos += (numberofpoints / number_of_waves);
+		}
+		/*glDrawArrays(GL_TRIANGLE_FAN, 0, numberofpoints / 2);
+		glDrawArrays(GL_TRIANGLE_FAN, numberofpoints / 2, numberofpoints / 2);*/
 		VAO1.Unbind();
 
 		VAO1.Delete();
