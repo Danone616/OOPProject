@@ -151,7 +151,7 @@ int main()
 	// Specify the viewport of OpenGL in the Window
 	glViewport(0, 0, width, height);
 
-	PerlinNoise3D noise(0, 6);
+	PerlinNoise3D noise(51, 6);
 
 	float SphereCentre[3] = { 0,0,0 };
 
@@ -219,7 +219,7 @@ int main()
 
 		rotation += 0.1f;
 
-		model = glm::rotate(model, glm::radians(rotation), glm::vec3(1.0f, 1.0f, 0.0f));
+		model = glm::rotate(model, glm::radians(rotation), glm::vec3(0.1f, 0.1f, 0.0f));
 
 		view = glm::translate(view, glm::vec3(0.0f, 0.0f, -2.0f));
 		proj = glm::perspective(glm::radians(45.0f), (float)(width / height), 0.1f, 100.0f);
@@ -249,7 +249,7 @@ int main()
 		// Tell OpenGL which Shader Program we want to use
 		
 		VAO1.Bind();
-		glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(int), GL_UNSIGNED_INT, 0);
+		glDrawElements(GL_LINES, sizeof(indices) / sizeof(int), GL_UNSIGNED_INT, 0);
 		// Assigns a value to the uniform; NOTE: Must always be done after activating the Shader Program
 		// Bind the VAO so OpenGL knows to use it
 		// Swap the back buffer with the front buffer

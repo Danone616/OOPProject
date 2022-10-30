@@ -1,5 +1,4 @@
 #include "PerlinNoise3D.h"
-#include<iostream>//for debug
 
 PerlinNoise3D::PerlinNoise3D(int noiseseed, int depth)///size is a power
 {
