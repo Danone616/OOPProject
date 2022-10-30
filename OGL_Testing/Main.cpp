@@ -122,7 +122,7 @@ Sphere CreateSphere(GLfloat x, GLfloat y, GLfloat z, GLfloat r, int depth)
 }
 
 GLfloat vertices[6138*2];
-GLuint indices[6144];
+GLuint indices[6144*2];
 int main()
 {
 	ll a=0;
@@ -167,20 +167,23 @@ int main()
 		GLfloat noisevalue = noise.Calculate(sphere.points[i], sphere.points[i + 1], sphere.points[i + 2]);
 		GLfloat radiuschange = 1+(2*radiuschangestrength*noisevalue-radiuschangestrength);
 
-		vertices[i * 2] = sphere.points[i]* radiuschange;
-		vertices[i * 2 + 1] = sphere.points[i + 1]* radiuschange;
-		vertices[i * 2 + 2] = sphere.points[i + 2]* radiuschange;
+		vertices[i * 2] = sphere.points[i];
+		vertices[i * 2 + 1] = sphere.points[i + 1];
+		vertices[i * 2 + 2] = sphere.points[i + 2];
 		
-		vertices[i * 2 + 3] = noisevalue;
-		vertices[i * 2 + 4] = noisevalue;
-		vertices[i * 2 + 5] = noisevalue;
+		vertices[i * 2 + 3] = sphere.points[i]*2;
+		vertices[i * 2 + 4] = sphere.points[i + 1]*2;
+		vertices[i * 2 + 5] = sphere.points[i + 2]*2;
 		
 	}
-	for (int i = 0; i < sphere.triangles.size(); i += 3)
+	for (int i = 0; i < 2*sphere.triangles.size(); i += 6)
 	{
-		indices[i] = sphere.triangles[i];
-		indices[i+1] = sphere.triangles[i+1];
-		indices[i+2] = sphere.triangles[i+2];
+		indices[i] = sphere.triangles[i/2];
+		indices[i + 1] = sphere.triangles[i/2 + 1];
+		indices[i + 2] = sphere.triangles[i/2 + 1];
+		indices[i + 3] = sphere.triangles[i/2 + 2];
+		indices[i + 4] = sphere.triangles[i/2];
+		indices[i + 5] = sphere.triangles[i/2 + 2];
 	}
 	
 
@@ -217,9 +220,9 @@ int main()
 		glm::mat4 view = glm::mat4(1.0f);
 		glm::mat4 proj = glm::mat4(1.0f);
 
-		rotation += 0.1f;
+		rotation += 0.005f;
 
-		model = glm::rotate(model, glm::radians(rotation), glm::vec3(0.1f, 0.1f, 0.0f));
+		model = glm::rotate(model, glm::radians(rotation), glm::vec3(0.0f, 1.0f, 1.0f));
 
 		view = glm::translate(view, glm::vec3(0.0f, 0.0f, -2.0f));
 		proj = glm::perspective(glm::radians(45.0f), (float)(width / height), 0.1f, 100.0f);
