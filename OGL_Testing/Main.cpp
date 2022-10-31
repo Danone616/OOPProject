@@ -82,8 +82,6 @@ int main()
 
 	GLfloat rotation = 0.0f;
 	glEnable(GL_DEPTH_TEST);
-	Tile_plain tile(0, 0, 1, 1);
-	tile.setColor(0.4, 0.3, 0.2);
 	Shader shaderProgram("default.vert", "default.frag");
 	shaderProgram.Activate();
 	while (!glfwWindowShouldClose(window))
@@ -113,7 +111,6 @@ int main()
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		tile.draw();
 		s.vao->Bind();
 		glDrawElements(GL_TRIANGLES, s.indicesSize, GL_UNSIGNED_INT, 0);
 		glfwSwapBuffers(window);

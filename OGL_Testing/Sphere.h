@@ -29,24 +29,4 @@ public:
 	GLuint indicesSize;
 };
 
-class Tile_plain
-{
-private:
-	double xpos, ypos;
-	double xsize, ysize;
-	GLfloat vertices[4 * 6];
-	GLuint indices[6];
-	VBO* TileVBO;
-	EBO* TileEBO;
-	VAO* TileVAO;
-public:
-	Tile_plain(double xPos, double yPos, double xSize, double ySize);
-	Tile_plain();
-	void draw();
-	void setColor(float red, float green, float blue);
-	float getRed();
-	float getGreen();
-	float getBlue();
-};
-
-#endif#pragma once
+#endif
