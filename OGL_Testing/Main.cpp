@@ -14,20 +14,18 @@
 #include"VBO.h"
 #include"EBO.h"
 #include"PerlinNoise3D.h"
+#include"Sphere.h"
 
-#define ll long long 
 const int width = 900;
 const int height = 900;
 
-//std::pair<GLfloat[], GLuint[]> sphere = CreateSphere(0.0f, 0.0f, 0.0f, 1.0f,3);
-
-struct Sphere
+struct SphereS
 {
 	std::vector<GLfloat> points;//vertices
 	std::vector<GLint> triangles;//indices
 };
 
-Sphere CreateSphere(GLfloat x, GLfloat y, GLfloat z, GLfloat r, int depth)
+SphereS CreateSphere(GLfloat x, GLfloat y, GLfloat z, GLfloat r, int depth)
 {
 	if (depth == 1)
 	{
@@ -53,7 +51,7 @@ Sphere CreateSphere(GLfloat x, GLfloat y, GLfloat z, GLfloat r, int depth)
 		};
 		return {points,triangles};
 	}
-	Sphere sphere = CreateSphere(x, y, z, r, depth - 1);
+	SphereS sphere = CreateSphere(x, y, z, r, depth - 1);
 
 	std::vector<GLint> triangles = sphere.triangles;
 	std::vector<GLfloat> points = sphere.points;
@@ -125,7 +123,6 @@ GLfloat vertices[6138*2];
 GLuint indices[6144*2];
 int main()
 {
-	ll a=0;
 	glfwInit();
 	// Tell GLFW what version of OpenGL we are using 
 	// In this case we are using OpenGL 3.3
@@ -151,15 +148,17 @@ int main()
 	// Specify the viewport of OpenGL in the Window
 	glViewport(0, 0, width, height);
 
-	PerlinNoise3D noise(51, 6);
+	PerlinNoise3D noise(0, 6);
 
 	float SphereCentre[3] = { 0,0,0 };
 
-	Sphere sphere = CreateSphere(0.0f, 0.0f, 0.0f, 0.5f,5);
+	SphereS sphere = CreateSphere(0.0f, 0.0f, 0.0f, 0.5f,5);
 
-	std::cout << sphere.triangles.size() << " " << sphere.points.size()<<std::endl;
+	//std::cout << sphere.triangles.size() << " " << sphere.points.size()<<std::endl;
 
-	GLfloat radiuschangestrength = 0.7;
+	GLfloat radiuschangestrength = 1;
+
+	
 
 	for (int i = 0; i < sphere.points.size(); i += 3)
 	{
@@ -167,23 +166,22 @@ int main()
 		GLfloat noisevalue = noise.Calculate(sphere.points[i], sphere.points[i + 1], sphere.points[i + 2]);
 		GLfloat radiuschange = 1+(2*radiuschangestrength*noisevalue-radiuschangestrength);
 
-		vertices[i * 2] = sphere.points[i];
-		vertices[i * 2 + 1] = sphere.points[i + 1];
-		vertices[i * 2 + 2] = sphere.points[i + 2];
+		//position
+		vertices[i * 2] = sphere.points[i] * radiuschange;
+		vertices[i * 2 + 1] = sphere.points[i + 1] * radiuschange;
+		vertices[i * 2 + 2] = sphere.points[i + 2] * radiuschange;
 		
+		//color
 		vertices[i * 2 + 3] = sphere.points[i]*2;
 		vertices[i * 2 + 4] = sphere.points[i + 1]*2;
 		vertices[i * 2 + 5] = sphere.points[i + 2]*2;
 		
 	}
-	for (int i = 0; i < 2*sphere.triangles.size(); i += 6)
+	for (int i = 0; i < sphere.triangles.size(); i += 3)
 	{
-		indices[i] = sphere.triangles[i/2];
-		indices[i + 1] = sphere.triangles[i/2 + 1];
-		indices[i + 2] = sphere.triangles[i/2 + 1];
-		indices[i + 3] = sphere.triangles[i/2 + 2];
-		indices[i + 4] = sphere.triangles[i/2];
-		indices[i + 5] = sphere.triangles[i/2 + 2];
+		indices[i] = sphere.triangles[i];
+		indices[i + 1] = sphere.triangles[i + 1];
+		indices[i + 2] = sphere.triangles[i + 2];
 	}
 	
 
@@ -208,6 +206,14 @@ int main()
 	// Links VBO attributes such as coordinates and colors to VAO
 	// Unbind all to prevent accidentally modifying them
 	// Main while loop
+
+
+	Sphere s(0.0f,0.0f,0.0f,0.5f,5);
+
+	/*for (int i = 0; i < s.verticesSize; i += 6)
+	{
+		std::cout << vertices[i] << " " << vertices[i+1] << " " << vertices[i+2] << " " << vertices[i+3] << " " << vertices[i+4] << " " << vertices[i+5] << std::endl;
+	}*/
 
 	GLfloat rotation = 0.0f;
 	glEnable(GL_DEPTH_TEST);
@@ -251,8 +257,8 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		// Tell OpenGL which Shader Program we want to use
 		
-		VAO1.Bind();
-		glDrawElements(GL_LINES, sizeof(indices) / sizeof(int), GL_UNSIGNED_INT, 0);
+		s.vao.Bind();
+		glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(int), GL_UNSIGNED_INT, 0);
 		// Assigns a value to the uniform; NOTE: Must always be done after activating the Shader Program
 		// Bind the VAO so OpenGL knows to use it
 		// Swap the back buffer with the front buffer
