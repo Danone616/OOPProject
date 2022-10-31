@@ -6,10 +6,9 @@ Sphere::Sphere(GLfloat x, GLfloat y, GLfloat z, GLfloat radius,GLint precision)
 	SphereStruct sphere = CreateSphere(x, y, z, radius, precision);
 
 	verticesSize = 2 * sphere.points.size();
-	indicesSize = sphere.triangles.size();
+	indicesSize = 2 * sphere.triangles.size();
 	vertices = new GLfloat[verticesSize];
 	indices = new GLuint[indicesSize];
-	
 
 	for (int i = 0; i < sphere.points.size(); i += 3)
 	{
@@ -17,12 +16,13 @@ Sphere::Sphere(GLfloat x, GLfloat y, GLfloat z, GLfloat radius,GLint precision)
 		vertices[i * 2] = sphere.points[i];
 		vertices[i * 2 + 1] = sphere.points[i + 1];
 		vertices[i * 2 + 2] = sphere.points[i + 2];
+
 		//color
 		vertices[i * 2 + 3] = sphere.points[i];
 		vertices[i * 2 + 4] = sphere.points[i + 1];
 		vertices[i * 2 + 5] = sphere.points[i + 2];
-	}
 
+	}
 
 	for (int i = 0; i < sphere.triangles.size(); i += 3)
 	{
@@ -30,10 +30,14 @@ Sphere::Sphere(GLfloat x, GLfloat y, GLfloat z, GLfloat radius,GLint precision)
 		indices[i + 1] = sphere.triangles[i + 1];
 		indices[i + 2] = sphere.triangles[i + 2];
 	}
+
+
 	vao = new VAO();
 	vao->Bind();
-	vbo = new VBO(vertices, sizeof(vertices));
-	ebo = new EBO(indices, sizeof(indices));
+	vbo = new VBO(vertices, verticesSize*sizeof(GLfloat));
+	ebo = new EBO(indices, indicesSize*sizeof(GLuint));
+	vbo->Bind();
+	ebo->Bind();
 	vao->Link(*vbo, 0, 3, GL_FLOAT, 6 * sizeof(GLfloat), (void*)0);
 	vao->Link(*vbo, 1, 3, GL_FLOAT, 6 * sizeof(GLfloat), (void*)(3 * sizeof(float)));
 
@@ -139,11 +143,10 @@ Sphere::SphereStruct Sphere::CreateSphere(GLfloat x, GLfloat y, GLfloat z, GLflo
 void Sphere::DrawSphere()
 {
 	vao->Bind();
-	glDrawElements(GL_TRIANGLES,indicesSize*3, GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, indicesSize, GL_UNSIGNED_INT, 0);
 }
 //todo
 /*
-transfer sphere to the class(make it with VBOs and shit)(For simplicity make sphere and separate sphere with gl compatibitity)
 make an asteroid class(same shit, gl compatible)
 remove magic numbers from perlin noise generation
 make the main loop framerate capped(FPS variable dependent, no magic numbers)
@@ -216,14 +219,9 @@ Tile_plain::Tile_plain()
 {
 }
 
-
 void Tile_plain::draw()
 {
 	TileVAO->Bind();
-
-
-
-
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 }
 

@@ -22,7 +22,7 @@ public:
 	EBO* ebo;
 	VAO* vao;
 	Sphere(GLfloat x, GLfloat y, GLfloat z, GLfloat radius, GLint precision);
-	SphereStruct CreateSphere(GLfloat x, GLfloat y, GLfloat z, GLfloat r, int depth);
+	static SphereStruct CreateSphere(GLfloat x, GLfloat y, GLfloat z, GLfloat r, int depth);
 	void DrawSphere();
 	
 	GLuint verticesSize;
