@@ -217,7 +217,8 @@ int main()
 
 	GLfloat rotation = 0.0f;
 	glEnable(GL_DEPTH_TEST);
-
+	Tile_plain tile(0, 0, 1, 1);
+	tile.setColor(0.4, 0.3, 0.2);
 	while (!glfwWindowShouldClose(window))
 	{
 		shaderProgram.Activate();
@@ -256,11 +257,14 @@ int main()
 		// Clean the back buffer and assign the new color to it
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		// Tell OpenGL which Shader Program we want to use
-		
-		s.vao.Bind();
-		glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(int), GL_UNSIGNED_INT, 0);
+		tile.draw();
+		//s.DrawSphere();
+		//s.vao->Bind();
+		//VAO1.Bind();
+		//glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(int), GL_UNSIGNED_INT, 0);
 		// Assigns a value to the uniform; NOTE: Must always be done after activating the Shader Program
 		// Bind the VAO so OpenGL knows to use it
+		
 		// Swap the back buffer with the front buffer
 		glfwSwapBuffers(window);
 		// Take care of all GLFW events
