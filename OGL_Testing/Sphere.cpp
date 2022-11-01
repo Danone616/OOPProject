@@ -1,14 +1,18 @@
 #include "Sphere.h"
 
-Sphere::Sphere(GLfloat x, GLfloat y, GLfloat z, GLfloat radius,GLint precision)
+Sphere::Sphere(GLfloat radius,GLint precision,int colortype,int drawtype)
 {
-
-	SphereStruct sphere = CreateSphere(x, y, z, radius, precision);
+	colorType = colortype;
+	drawType = drawtype;
+	SphereStruct sphere = CreateSphere(0, 0, 0, radius, precision);
 
 	verticesSize = 2 * sphere.points.size();
-	indicesSize = 2 * sphere.triangles.size();
-	vertices = new GLfloat[verticesSize];
-	indices = new GLuint[indicesSize];
+	if(drawType == 0)indicesSize = sphere.triangles.size();
+	else if(drawType == 1)indicesSize = 2 * sphere.triangles.size();
+	GLfloat* vertices = new GLfloat[verticesSize];
+	GLuint* indices = new GLuint[indicesSize];
+	VBO* vbo;
+	EBO* ebo;
 
 	for (int i = 0; i < sphere.points.size(); i += 3)
 	{
@@ -18,17 +22,34 @@ Sphere::Sphere(GLfloat x, GLfloat y, GLfloat z, GLfloat radius,GLint precision)
 		vertices[i * 2 + 2] = sphere.points[i + 2];
 
 		//color
-		vertices[i * 2 + 3] = sphere.points[i];
-		vertices[i * 2 + 4] = sphere.points[i + 1];
-		vertices[i * 2 + 5] = sphere.points[i + 2];
-
+		if (colorType == 0)
+		{
+			vertices[i * 2 + 3] = 1.0f;
+			vertices[i * 2 + 4] = 1.0f;
+			vertices[i * 2 + 5] = 1.0f;
+		}
+		if (colorType == 1)
+		{
+			vertices[i * 2 + 3] = sphere.points[i] / radius;
+			vertices[i * 2 + 4] = sphere.points[i + 1] / radius;
+			vertices[i * 2 + 5] = sphere.points[i + 2] / radius;
+		}
 	}
 
-	for (int i = 0; i < sphere.triangles.size(); i += 3)
+	if (drawType == 0)for (int i = 0; i < sphere.triangles.size(); i += 3)
 	{
 		indices[i] = sphere.triangles[i];
 		indices[i + 1] = sphere.triangles[i + 1];
 		indices[i + 2] = sphere.triangles[i + 2];
+	}
+	else if(drawType == 1)for (int i = 0; i < sphere.triangles.size(); i += 3)
+	{
+		indices[i * 2] = sphere.triangles[i];
+		indices[i * 2 + 1] = sphere.triangles[i + 1];
+		indices[i * 2 + 2] = sphere.triangles[i];
+		indices[i * 2 + 3] = sphere.triangles[i + 2];
+		indices[i * 2 + 4] = sphere.triangles[i + 1];
+		indices[i * 2 + 5] = sphere.triangles[i + 2];
 	}
 
 
@@ -42,8 +63,8 @@ Sphere::Sphere(GLfloat x, GLfloat y, GLfloat z, GLfloat radius,GLint precision)
 	vao->Link(*vbo, 1, 3, GL_FLOAT, 6 * sizeof(GLfloat), (void*)(3 * sizeof(float)));
 
 	vao->Unbind();
-	vbo->Unbind();
-	ebo->Unbind();
+	vbo->Delete();
+	ebo->Delete();
 };
 
 Sphere::SphereStruct Sphere::CreateSphere(GLfloat x, GLfloat y, GLfloat z, GLfloat r, int depth)
@@ -52,12 +73,12 @@ Sphere::SphereStruct Sphere::CreateSphere(GLfloat x, GLfloat y, GLfloat z, GLflo
 	{
 		std::vector<GLfloat> points =
 		{
-			x + r,0.0f,0.0f,
-			x - r,0.0f,0.0f,
-			0.0f,y + r,0.0f,
-			0.0f,y - r,0.0f,
-			0.0f,0.0f,z + r,
-			0.0f,0.0f,z - r
+			x + r,y,z,
+			x - r,y,z,
+			x,y + r,z,
+			x,y - r,z,
+			x,y,z + r,
+			x,y,z - r
 		};
 		std::vector<GLint> triangles =
 		{
@@ -93,17 +114,18 @@ Sphere::SphereStruct Sphere::CreateSphere(GLfloat x, GLfloat y, GLfloat z, GLflo
 		GLfloat newz3 = (points[triangles[i] * 3 + 2] + points[triangles[i + 2] * 3 + 2]) / 2;
 
 		GLfloat dist1 = sqrt((newx1 - x) * (newx1 - x) + (newy1 - y) * (newy1 - y) + (newz1 - z) * (newz1 - z));
-		newx1 *= r / dist1;
-		newy1 *= r / dist1;
-		newz1 *= r / dist1;
+
+		newx1 = (newx1 - x) * r / dist1 + x;
+		newy1 = (newy1 - y) * r / dist1 + y;
+		newz1 = (newz1 - z) * r / dist1 + z;
 		GLfloat dist2 = sqrt((newx2 - x) * (newx2 - x) + (newy2 - y) * (newy2 - y) + (newz2 - z) * (newz2 - z));
-		newx2 *= r / dist2;
-		newy2 *= r / dist2;
-		newz2 *= r / dist2;
+		newx2 = (newx2 - x) * r / dist2 + x;
+		newy2 = (newy2 - y) * r / dist2 + y;
+		newz2 = (newz2 - z) * r / dist2 + z;
 		GLfloat dist3 = sqrt((newx3 - x) * (newx3 - x) + (newy3 - y) * (newy3 - y) + (newz3 - z) * (newz3 - z));
-		newx3 *= r / dist3;
-		newy3 *= r / dist3;
-		newz3 *= r / dist3;
+		newx3 = (newx3 - x) * r / dist3 + x;
+		newy3 = (newy3 - y) * r / dist3 + y;
+		newz3 = (newz3 - z) * r / dist3 + z;
 
 		sphere.points.push_back(newx1);
 		sphere.points.push_back(newy1);
@@ -140,15 +162,17 @@ Sphere::SphereStruct Sphere::CreateSphere(GLfloat x, GLfloat y, GLfloat z, GLflo
 	return sphere;
 }
 
-void Sphere::DrawSphere()
+void Sphere::Draw()
 {
 	vao->Bind();
-	glDrawElements(GL_TRIANGLES, indicesSize, GL_UNSIGNED_INT, 0);
+	if(drawType == 0)glDrawElements(GL_TRIANGLES, indicesSize, GL_UNSIGNED_INT, 0);
+	else if (drawType == 1)glDrawElements(GL_LINES, indicesSize, GL_UNSIGNED_INT, 0);
 }
 //todo
 /*
-make an asteroid class(same shit, gl compatible)
+figure out what the fuck is going on with colors on a sphere
 remove magic numbers from perlin noise generation
+make an asteroid class(same shit, gl compatible)
 make the main loop framerate capped(FPS variable dependent, no magic numbers)
 introduce camera class(kill me)
 memory management(delete unnecessary data)

@@ -48,6 +48,9 @@
     <ClCompile Include="Sphere.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Asteroid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="default.vert">
@@ -79,6 +82,9 @@
       <Filter>Header FIles</Filter>
     </ClInclude>
     <ClInclude Include="Sphere.h">
+      <Filter>Header FIles</Filter>
+    </ClInclude>
+    <ClInclude Include="Asteroid.h">
       <Filter>Header FIles</Filter>
     </ClInclude>
   </ItemGroup>

@@ -70,6 +70,12 @@ float PerlinNoise3D::Calculate(float x, float y, float z)
 {
 	///inputs are -1 to 1
 	/// 0 <= x,y,z <= 1
+	if (x > 1)x = 1;
+	if (y > 1)y = 1;
+	if (z > 1)z = 1;
+	if (x < -1)x = -1;
+	if (y < -1)y = -1;
+	if (z < -1)z = -1;
 	x = (x + 1) / 2;
 	y = (y + 1) / 2;
 	z = (z + 1) / 2;

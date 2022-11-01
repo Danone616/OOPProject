@@ -146,6 +146,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Asteroid.cpp" />
     <ClCompile Include="EBO.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="Main.cpp" />
@@ -163,6 +164,7 @@
     <Text Include="default.frag" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Asteroid.h" />
     <ClInclude Include="EBO.h" />
     <ClInclude Include="Libraries\include\stb\stb_image.h" />
     <ClInclude Include="PerlinNoise3D.h" />

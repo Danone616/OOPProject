@@ -15,6 +15,7 @@
 #include"EBO.h"
 #include"PerlinNoise3D.h"
 #include"Sphere.h"
+#include"Asteroid.h"
 
 const int width = 900;
 const int height = 900;
@@ -78,25 +79,27 @@ int main()
 	EBO1.Unbind();
 	*/
 	
-	Sphere s(0.0f,0.0f,0.0f,0.5f,5);
+	Sphere s1(0.5f, 5, 1, 0);
+	Sphere s2(0.5f, 5, 1, 0);
+	Sphere s3(0.5f, 5, 1, 0);
+	Sphere s4(0.5f, 5, 1, 0);
 
 	GLfloat rotation = 0.0f;
 	glEnable(GL_DEPTH_TEST);
 	Shader shaderProgram("default.vert", "default.frag");
 	shaderProgram.Activate();
+	glm::mat4 model1 = glm::mat4(1.0f);
+	glm::mat4 view = glm::mat4(1.0f);
+	glm::mat4 proj = glm::mat4(1.0f);
+	view = glm::translate(view, glm::vec3(0.0f, 0.0f, -2.0f));
+	proj = glm::perspective(glm::radians(45.0f), (float)(width / height), 0.1f, 100.0f);
 	while (!glfwWindowShouldClose(window))
 	{
+		rotation += 0.05f;
+
 		
-
-		glm::mat4 model = glm::mat4(1.0f);
-		glm::mat4 view = glm::mat4(1.0f);
-		glm::mat4 proj = glm::mat4(1.0f);
-
-		rotation += 0.005f;
-
-		model = glm::rotate(model, glm::radians(rotation), glm::vec3(0.0f, 1.0f, 1.0f));
-		view = glm::translate(view, glm::vec3(0.0f, 0.0f, -2.0f));
-		proj = glm::perspective(glm::radians(45.0f), (float)(width / height), 0.1f, 100.0f);
+		model1 = glm::translate(model1, glm::vec3(0.0f, 0.0f, -0.0001f));
+		glm::mat4 model = glm::rotate(model1, glm::radians(rotation), glm::vec3(1.0f, 1.0f, 1.0f));
 
 		int modelLoc = glGetUniformLocation(shaderProgram.ID, "model");
 		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
@@ -111,8 +114,12 @@ int main()
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		s.vao->Bind();
-		glDrawElements(GL_TRIANGLES, s.indicesSize, GL_UNSIGNED_INT, 0);
+
+		s1.Draw();
+		/*s2.Draw();
+		s3.Draw();
+		s4.Draw();*/
+
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}

@@ -16,17 +16,14 @@ public:
 		std::vector<GLfloat> points;//vertices
 		std::vector<GLint> triangles;//indices
 	};
-	GLfloat* vertices;
-	GLuint* indices;
-	VBO* vbo;
-	EBO* ebo;
 	VAO* vao;
-	Sphere(GLfloat x, GLfloat y, GLfloat z, GLfloat radius, GLint precision);
-	static SphereStruct CreateSphere(GLfloat x, GLfloat y, GLfloat z, GLfloat r, int depth);
-	void DrawSphere();
-	
 	GLuint verticesSize;
 	GLuint indicesSize;
+	int colorType;
+	int drawType;
+	Sphere(GLfloat radius, GLint precision,int colortype,int drawtype);
+	static SphereStruct CreateSphere(GLfloat x, GLfloat y, GLfloat z, GLfloat r, int depth);
+	void Draw();
 };
 
 #endif
