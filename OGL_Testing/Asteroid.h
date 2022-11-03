@@ -13,10 +13,11 @@ public:
 	VAO* vao;
 	GLuint verticesSize;
 	GLuint indicesSize;
+	glm::mat4 position = glm::mat4(1.0f);
 	int colorType;
 	int drawType;
 	void Draw();
-	Asteroid(GLfloat x, GLfloat y, GLfloat z, GLfloat radius, GLint precision, int colortype, int drawtype);
+	Asteroid(GLfloat radius, GLint precision, int colortype, int drawtype);
 };
 
 #endif

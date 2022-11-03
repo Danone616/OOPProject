@@ -8,6 +8,7 @@
 #include<glm/gtc/matrix_transform.hpp>
 #include<utility>
 #include<vector>
+#include<chrono>
 
 #include"Shaders.h"
 #include"VAO.h"
@@ -16,9 +17,10 @@
 #include"PerlinNoise3D.h"
 #include"Sphere.h"
 #include"Asteroid.h"
+#include"Camera.h"
 
-const int width = 900;
-const int height = 900;
+const int width = 1000;
+const int height = 1000;
 
 int main()
 {
@@ -37,88 +39,56 @@ int main()
 	gladLoadGL();
 	glViewport(0, 0, width, height);
 
-	PerlinNoise3D noise(0, 6);
-
-	/*float SphereCentre[3] = {0,0,0};
-
-	Sphere::SphereStruct sphere = Sphere::CreateSphere(0.0f, 0.0f, 0.0f, 0.5f,5);
-
-	GLfloat radiuschangestrength = 1;
-
-	for (int i = 0; i < sphere.points.size(); i += 3)
-	{
-		
-		GLfloat noisevalue = noise.Calculate(sphere.points[i], sphere.points[i + 1], sphere.points[i + 2]);
-		GLfloat radiuschange = 1+(2*radiuschangestrength*noisevalue-radiuschangestrength);
-
-		//position
-		vertices[i * 2] = sphere.points[i];
-		vertices[i * 2 + 1] = sphere.points[i + 1];
-		vertices[i * 2 + 2] = sphere.points[i + 2];
-		
-		//color
-		vertices[i * 2 + 3] = sphere.points[i];
-		vertices[i * 2 + 4] = sphere.points[i + 1];
-		vertices[i * 2 + 5] = sphere.points[i + 2];
-		
-	}
-	for (int i = 0; i < sphere.triangles.size(); i += 3)
-	{
-		indices[i] = sphere.triangles[i];
-		indices[i + 1] = sphere.triangles[i + 1];
-		indices[i + 2] = sphere.triangles[i + 2];
-	}
-	VAO VAO1;
-	VAO1.Bind();
-	VBO VBO1(vertices, sizeof(vertices));
-	EBO EBO1(indices, sizeof(indices));
-	VAO1.Link(VBO1, 0, 3, GL_FLOAT, 6 * sizeof(float), (void*)0);
-	VAO1.Link(VBO1, 1, 3, GL_FLOAT, 6 * sizeof(float), (void*)(3 * sizeof(float)));
-	VAO1.Unbind();
-	VBO1.Unbind();
-	EBO1.Unbind();
-	*/
 	
-	Sphere s1(0.5f, 5, 1, 0);
-	Sphere s2(0.5f, 5, 1, 0);
-	Sphere s3(0.5f, 5, 1, 0);
-	Sphere s4(0.5f, 5, 1, 0);
+
+
+	Camera camera(width, height, glm::vec3(0.0f, 0.0f, 2.0f));
+
+	Sphere s1(0.3f, 5, 1, 0);
+	Sphere s2(0.3f, 5, 1, 0);
 
 	GLfloat rotation = 0.0f;
 	glEnable(GL_DEPTH_TEST);
 	Shader shaderProgram("default.vert", "default.frag");
 	shaderProgram.Activate();
-	glm::mat4 model1 = glm::mat4(1.0f);
-	glm::mat4 view = glm::mat4(1.0f);
-	glm::mat4 proj = glm::mat4(1.0f);
-	view = glm::translate(view, glm::vec3(0.0f, 0.0f, -2.0f));
-	proj = glm::perspective(glm::radians(45.0f), (float)(width / height), 0.1f, 100.0f);
+	double FPS = 60;
+	std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
+	float frames = 0;
+
+	glm::vec3 velocity1 = { 0.05f, 0.000f, 0.000f };
+	s1.ChangePosition({ 1.000f, 1.000f, 0.000f }, 0.00f, { 1,1,1 });
+	glm::vec3 velocity2 = { -0.05f, -0.000f, -0.000f };
+	s2.ChangePosition(-s1.position, 0.00f, {1,1,1});
 	while (!glfwWindowShouldClose(window))
 	{
 		rotation += 0.05f;
-
+		std::chrono::high_resolution_clock::time_point t2 = std::chrono::high_resolution_clock::now();
+		std::chrono::duration<double> time_span = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
+		frames+=1;
 		
-		model1 = glm::translate(model1, glm::vec3(0.0f, 0.0f, -0.0001f));
-		glm::mat4 model = glm::rotate(model1, glm::radians(rotation), glm::vec3(1.0f, 1.0f, 1.0f));
+		while (time_span.count()<1/FPS)
+		{
+			t2 = std::chrono::high_resolution_clock::now();
+			time_span = std::chrono::duration_cast<std::chrono::duration<double>>(t2 - t1);
+		}
+		t1= std::chrono::high_resolution_clock::now();
+		//std::cout << time_span.count()<<std::endl;
 
-		int modelLoc = glGetUniformLocation(shaderProgram.ID, "model");
-		glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-		int viewLoc = glGetUniformLocation(shaderProgram.ID, "view");
-		glUniformMatrix4fv(viewLoc, 1, GL_FALSE, glm::value_ptr(view));
-		int projLoc = glGetUniformLocation(shaderProgram.ID, "proj");
-		glUniformMatrix4fv(projLoc, 1, GL_FALSE, glm::value_ptr(proj));
-
-		GLuint uniID = glGetUniformLocation(shaderProgram.ID, "scale");
-		glUniform1f(uniID, 1.0f);
+		camera.Inputs(window);
+		camera.Matrix(45.0f, 0.1f, 10000.0f, shaderProgram, "camMatrix");
+		
 
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		s1.Draw();
-		/*s2.Draw();
-		s3.Draw();
-		s4.Draw();*/
+		//s1.Draw();
+		velocity1 = velocity1 - (s2.position - s1.position) * 0.0001f;
+		velocity2 = velocity2 - (s1.position - s2.position) * 0.0001f;
+		s2.Draw(shaderProgram);
+		s2.ChangePosition(velocity1, 0.01f, { 1,1,1 });
+		s1.Draw(shaderProgram);
+		s1.ChangePosition(velocity2, 0.01f, { 1,1,1 });
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

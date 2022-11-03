@@ -5,7 +5,7 @@ PerlinNoise3D::PerlinNoise3D(int noiseseed, int depth)///size is a power
 	seed = noiseseed;
 	size = pow(2, depth);
 
-	Noise = std::vector< std::vector< std::vector<float> > > (size, std::vector< std::vector< float > >(size, std::vector< float >(size, 0)));
+	std::vector < std::vector < std::vector<float>>> Noise = std::vector< std::vector< std::vector<float> > > (size, std::vector< std::vector< float > >(size, std::vector< float >(size, 0)));
 	Result = std::vector< std::vector< std::vector<float> > >(size, std::vector< std::vector< float > >(size, std::vector< float >(size, 0)));
 
 	srand(seed);
@@ -65,41 +65,36 @@ PerlinNoise3D::PerlinNoise3D(int noiseseed, int depth)///size is a power
 		}
 	}
 	for (int i = 0; i < size; i++)for (int j = 0; j < size; j++)for (int k = 0; k < size; k++)Result[i][j][k] /= maxvalue;
+	Noise.~vector();
 }
 float PerlinNoise3D::Calculate(float x, float y, float z)
 {
 	///inputs are -1 to 1
 	/// 0 <= x,y,z <= 1
-	if (x > 1)x = 1;
-	if (y > 1)y = 1;
-	if (z > 1)z = 1;
-	if (x < -1)x = -1;
-	if (y < -1)y = -1;
-	if (z < -1)z = -1;
-	x = (x + 1) / 2;
-	y = (y + 1) / 2;
-	z = (z + 1) / 2;
-
+	x = (x+4) / 2;
 	x *= size;
-	int firsti = (int)x;
+	int firsti = (int)x%size;
 	int secondi = (firsti + 1) % size;
-	float disti = x-firsti;
+	float disti = x- (int)x;
 	float firstmultiplieri = 1 - disti;
 	float secondmultiplieri = disti;
-	
+	y = (y+4) / 2;
 	y *= size;
-	int firstj = (int)y;
+	int firstj = (int)y % size;
 	int secondj = (firstj + 1) % size;
-	float distj = y - firstj;
+	float distj = y - (int)y;
 	float firstmultiplierj = 1 - distj;
 	float secondmultiplierj = distj;
-
+	z = (z + 4) / 2;
 	z *= size;
-	int firstk = (int)z;
+	int firstk = (int)z % size;
 	int secondk = (firstk + 1) % size;
-	float distk = z - firstk;
+	float distk = z - (int)z;
 	float firstmultiplierk = 1 - distk;
 	float secondmultiplierk = distk;
+
+	
+
 
 	return (Result[firsti][firstj][firstk] * firstmultiplieri * firstmultiplierj * firstmultiplierk +
 			Result[firsti][firstj][secondk] * firstmultiplieri * firstmultiplierj * secondmultiplierk +
@@ -109,4 +104,8 @@ float PerlinNoise3D::Calculate(float x, float y, float z)
 			Result[secondi][firstj][secondk] * secondmultiplieri * firstmultiplierj * secondmultiplierk +
 			Result[secondi][secondj][firstk] * secondmultiplieri * secondmultiplierj * firstmultiplierk +
 			Result[secondi][secondj][secondk] * secondmultiplieri * secondmultiplierj * secondmultiplierk);
+}
+PerlinNoise3D::~PerlinNoise3D()
+{
+	Result.~vector();
 }

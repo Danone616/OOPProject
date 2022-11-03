@@ -1,11 +1,13 @@
 #include "Asteroid.h"
 #include "PerlinNoise3D.h"
 
-Asteroid::Asteroid(GLfloat x, GLfloat y, GLfloat z, GLfloat radius, GLint precision, int colortype, int drawtype)
+#include<iostream>
+
+Asteroid::Asteroid(GLfloat radius, GLint precision, int colortype, int drawtype)
 {
 	colorType = colortype;
 	drawType = drawtype;
-	Sphere::SphereStruct sphere = Sphere::CreateSphere(x, y, z, radius, precision);
+	Sphere::SphereStruct sphere = Sphere::CreateSphere(0, 0, 0, radius, precision);
 
 	verticesSize = 2 * sphere.points.size();
 	if (drawType == 0)indicesSize = sphere.triangles.size();
@@ -14,14 +16,12 @@ Asteroid::Asteroid(GLfloat x, GLfloat y, GLfloat z, GLfloat radius, GLint precis
 	GLuint * indices = new GLuint[indicesSize];
 	VBO * vbo;
 	EBO * ebo;
-	PerlinNoise3D noise(0, 6);
-	GLfloat radiuschangestrength = 1;
+	PerlinNoise3D noise(134, 6);
+	GLfloat radiuschangestrength = 0.3;
 	for (int i = 0; i < sphere.points.size(); i += 3)
 	{
-
-		GLfloat noisevalue = noise.Calculate((sphere.points[i]-x) / radius, (sphere.points[i + 1] - y)/radius, (sphere.points[i + 2] - z))/radius;
+		GLfloat noisevalue = noise.Calculate((sphere.points[i]) / radius, (sphere.points[i + 1]) / radius, (sphere.points[i + 2])) / radius;
 		GLfloat radiuschange = 1 + (2 * radiuschangestrength * noisevalue - radiuschangestrength);
-
 		//position
 		vertices[i * 2] = sphere.points[i] * radiuschange;
 		vertices[i * 2 + 1] = sphere.points[i + 1] * radiuschange;
@@ -36,9 +36,9 @@ Asteroid::Asteroid(GLfloat x, GLfloat y, GLfloat z, GLfloat radius, GLint precis
 		}
 		if (colorType == 1)
 		{
-			vertices[i * 2 + 3] = (sphere.points[i] - x) / radius;
-			vertices[i * 2 + 4] = (sphere.points[i + 1] - y) / radius;
-			vertices[i * 2 + 5] = (sphere.points[i + 2] - z) / radius;
+			vertices[i * 2 + 3] = 0.5 + sphere.points[i] / radius;
+			vertices[i * 2 + 4] = 0.5 + sphere.points[i + 1] / radius;
+			vertices[i * 2 + 5] = 0.5 + sphere.points[i + 2] / radius;
 		}
 
 	}
@@ -65,6 +65,10 @@ Asteroid::Asteroid(GLfloat x, GLfloat y, GLfloat z, GLfloat radius, GLint precis
 	ebo->Bind();
 	vao->Link(*vbo, 0, 3, GL_FLOAT, 6 * sizeof(GLfloat), (void*)0);
 	vao->Link(*vbo, 1, 3, GL_FLOAT, 6 * sizeof(GLfloat), (void*)(3 * sizeof(float)));
+
+	delete[verticesSize] vertices;
+	delete[indicesSize] indices;
+
 	vao->Unbind();
 	vbo->Delete();
 	ebo->Delete();

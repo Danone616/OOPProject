@@ -1,5 +1,7 @@
 #include "Sphere.h"
 
+
+
 Sphere::Sphere(GLfloat radius,GLint precision,int colortype,int drawtype)
 {
 	colorType = colortype;
@@ -20,7 +22,6 @@ Sphere::Sphere(GLfloat radius,GLint precision,int colortype,int drawtype)
 		vertices[i * 2] = sphere.points[i];
 		vertices[i * 2 + 1] = sphere.points[i + 1];
 		vertices[i * 2 + 2] = sphere.points[i + 2];
-
 		//color
 		if (colorType == 0)
 		{
@@ -30,9 +31,9 @@ Sphere::Sphere(GLfloat radius,GLint precision,int colortype,int drawtype)
 		}
 		if (colorType == 1)
 		{
-			vertices[i * 2 + 3] = sphere.points[i] / radius;
-			vertices[i * 2 + 4] = sphere.points[i + 1] / radius;
-			vertices[i * 2 + 5] = sphere.points[i + 2] / radius;
+			vertices[i * 2 + 3] = 0.5 + sphere.points[i] /radius;
+			vertices[i * 2 + 4] = 0.5 + sphere.points[i + 1] / radius;
+			vertices[i * 2 + 5] = 0.5 + sphere.points[i + 2] / radius;
 		}
 	}
 
@@ -61,6 +62,9 @@ Sphere::Sphere(GLfloat radius,GLint precision,int colortype,int drawtype)
 	ebo->Bind();
 	vao->Link(*vbo, 0, 3, GL_FLOAT, 6 * sizeof(GLfloat), (void*)0);
 	vao->Link(*vbo, 1, 3, GL_FLOAT, 6 * sizeof(GLfloat), (void*)(3 * sizeof(float)));
+
+	delete[verticesSize] vertices;
+	delete[indicesSize] indices;
 
 	vao->Unbind();
 	vbo->Delete();
@@ -156,24 +160,31 @@ Sphere::SphereStruct Sphere::CreateSphere(GLfloat x, GLfloat y, GLfloat z, GLflo
 		trianglesnew.push_back(sphere.points.size() / 3 - 2);
 		trianglesnew.push_back(sphere.points.size() / 3 - 3);
 	}
-
 	sphere.triangles = trianglesnew;
 
 	return sphere;
 }
 
-void Sphere::Draw()
+void Sphere::Draw(Shader& shader)
 {
 	vao->Bind();
+	glm::mat4 positionmatrix = glm::mat4(1.0f);
+	positionmatrix = glm::translate(positionmatrix, position);
+	glUniformMatrix4fv(glGetUniformLocation(shader.ID, "objectMatrix"), 1, GL_FALSE, glm::value_ptr(positionmatrix * orientation));
 	if(drawType == 0)glDrawElements(GL_TRIANGLES, indicesSize, GL_UNSIGNED_INT, 0);
 	else if (drawType == 1)glDrawElements(GL_LINES, indicesSize, GL_UNSIGNED_INT, 0);
 }
+
+void Sphere::ChangePosition(glm::vec3 shift, GLfloat deg, glm::vec3 axis)
+{
+	position += shift;
+	orientation = glm::rotate(orientation, deg, axis);
+}
+
+
+
 //todo
 /*
-figure out what the fuck is going on with colors on a sphere
+add position matrices to asteroids
 remove magic numbers from perlin noise generation
-make an asteroid class(same shit, gl compatible)
-make the main loop framerate capped(FPS variable dependent, no magic numbers)
-introduce camera class(kill me)
-memory management(delete unnecessary data)
 */
