@@ -8,7 +8,7 @@ Sphere::Sphere(GLfloat radius,GLint precision,int colortype,int drawtype)
 	drawType = drawtype;
 	SphereStruct sphere = CreateSphere(0, 0, 0, radius, precision);
 
-	verticesSize = 2 * sphere.points.size();
+	verticesSize = 3 * sphere.points.size();
 	if(drawType == 0)indicesSize = sphere.triangles.size();
 	else if(drawType == 1)indicesSize = 2 * sphere.triangles.size();
 	GLfloat* vertices = new GLfloat[verticesSize];
@@ -19,22 +19,25 @@ Sphere::Sphere(GLfloat radius,GLint precision,int colortype,int drawtype)
 	for (int i = 0; i < sphere.points.size(); i += 3)
 	{
 		//position
-		vertices[i * 2] = sphere.points[i];
-		vertices[i * 2 + 1] = sphere.points[i + 1];
-		vertices[i * 2 + 2] = sphere.points[i + 2];
+		vertices[i * 3] = sphere.points[i];
+		vertices[i * 3 + 1] = sphere.points[i + 1];
+		vertices[i * 3 + 2] = sphere.points[i + 2];
 		//color
 		if (colorType == 0)
 		{
-			vertices[i * 2 + 3] = 1.0f;
-			vertices[i * 2 + 4] = 1.0f;
-			vertices[i * 2 + 5] = 1.0f;
+			vertices[i * 3 + 3] = 1.0f;
+			vertices[i * 3 + 4] = 1.0f;
+			vertices[i * 3 + 5] = 1.0f;
 		}
 		if (colorType == 1)
 		{
-			vertices[i * 2 + 3] = 0.5 + sphere.points[i] /radius;
-			vertices[i * 2 + 4] = 0.5 + sphere.points[i + 1] / radius;
-			vertices[i * 2 + 5] = 0.5 + sphere.points[i + 2] / radius;
+			vertices[i * 3 + 3] = 0.5 + sphere.points[i] /radius;
+			vertices[i * 3 + 4] = 0.5 + sphere.points[i + 1] / radius;
+			vertices[i * 3 + 5] = 0.5 + sphere.points[i + 2] / radius;
 		}
+		vertices[i * 3 + 6] = sphere.points[i] / radius;
+		vertices[i * 3 + 7] = sphere.points[i + 1] / radius;
+		vertices[i * 3 + 8] = sphere.points[i + 2] / radius;
 	}
 
 	if (drawType == 0)for (int i = 0; i < sphere.triangles.size(); i += 3)
@@ -60,8 +63,9 @@ Sphere::Sphere(GLfloat radius,GLint precision,int colortype,int drawtype)
 	ebo = new EBO(indices, indicesSize*sizeof(GLuint));
 	vbo->Bind();
 	ebo->Bind();
-	vao->Link(*vbo, 0, 3, GL_FLOAT, 6 * sizeof(GLfloat), (void*)0);
-	vao->Link(*vbo, 1, 3, GL_FLOAT, 6 * sizeof(GLfloat), (void*)(3 * sizeof(float)));
+	vao->Link(*vbo, 0, 3, GL_FLOAT, 9 * sizeof(GLfloat), (void*)0);
+	vao->Link(*vbo, 1, 3, GL_FLOAT, 9 * sizeof(GLfloat), (void*)(3 * sizeof(float)));
+	vao->Link(*vbo, 2, 3, GL_FLOAT, 9 * sizeof(GLfloat), (void*)(6 * sizeof(float)));
 
 	delete[verticesSize] vertices;
 	delete[indicesSize] indices;

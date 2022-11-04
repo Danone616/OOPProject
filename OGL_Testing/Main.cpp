@@ -44,9 +44,9 @@ int main()
 
 	Camera camera(width, height, glm::vec3(0.0f, 0.0f, 0.0f));
 
-	Sphere s1(0.3f, 5, 1, 0);
-	Sphere s2(0.3f, 5, 1, 0);
-	Sphere s3(0.3f, 5, 1, 0);
+	Sphere s1(0.3f, 5, 0, 0);
+	Sphere s2(0.3f, 5, 0, 0);
+	Sphere s3(0.3f, 5, 0, 0);
 	Grid grid1(100,3);
 	Grid axis(0, 1);
 
@@ -65,6 +65,9 @@ int main()
 	s2.ChangePosition({ 5.500f, 5.500f, 0.000f }, 0.00f, { 1,1,1 });
 	glm::vec3 velocity3 = { 0.012f, 0.000f, 0.000f };
 	s2.ChangePosition({ 0.000f, 0.000f, 1.000f }, 0.00f, { 1,1,1 });
+	velocity1 = { 0.0f, 0.0f, 0.0f };
+	velocity2 = { 0.0f, 0.0f, 0.0f };
+	velocity3 = { 0.0f, 0.0f, 0.0f };
 	while (!glfwWindowShouldClose(window))
 	{
 		rotation += 0.05f;
@@ -92,18 +95,18 @@ int main()
 		grid1.Draw();
 		shaderProgram.Activate();
 		camera.Matrix(45.0f, 0.1f, 10000.0f, shaderProgram, "camMatrix");
-		velocity1 = velocity1 + (s2.position - s1.position) * 0.0001f;
+		/*velocity1 = velocity1 + (s2.position - s1.position) * 0.0001f;
 		velocity1 = velocity1 + (s3.position - s1.position) * 0.0001f;
 		velocity2 = velocity2 + (s1.position - s2.position) * 0.0001f;
 		velocity2 = velocity2 + (s3.position - s2.position) * 0.0001f;
 		velocity3 = velocity3 + (s1.position - s3.position) * 0.0001f;
-		velocity3 = velocity3 + (s2.position - s3.position) * 0.0001f;
+		velocity3 = velocity3 + (s2.position - s3.position) * 0.0001f;*/
 		s1.Draw(shaderProgram);
-		s1.ChangePosition(velocity1, 0.01f, { 1,1,1 });
+		s1.ChangePosition(velocity1, 0.0f, { 1,1,1 });
 		s2.Draw(shaderProgram);
-		s2.ChangePosition(velocity2, 0.01f, { 1,1,1 });
+		s2.ChangePosition(velocity2, 0.0f, { 1,1,1 });
 		s3.Draw(shaderProgram);
-		s3.ChangePosition(velocity3, 0.01f, { 1,1,1 });
+		s3.ChangePosition(velocity3, 0.0f, { 1,1,1 });
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
