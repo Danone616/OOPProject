@@ -54,9 +54,21 @@
     <ClCompile Include="Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Line.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Grid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="default.vert">
+      <Filter>Resource FIles\Shaders</Filter>
+    </None>
+    <None Include="line.frag">
+      <Filter>Resource FIles\Shaders</Filter>
+    </None>
+    <None Include="line.vert">
       <Filter>Resource FIles\Shaders</Filter>
     </None>
   </ItemGroup>
@@ -91,6 +103,12 @@
       <Filter>Header FIles</Filter>
     </ClInclude>
     <ClInclude Include="Camera.h">
+      <Filter>Header FIles</Filter>
+    </ClInclude>
+    <ClInclude Include="Line.h">
+      <Filter>Header FIles</Filter>
+    </ClInclude>
+    <ClInclude Include="Grid.h">
       <Filter>Header FIles</Filter>
     </ClInclude>
   </ItemGroup>
