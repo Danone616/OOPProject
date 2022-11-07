@@ -1,14 +1,19 @@
-#include<iostream>
+
 #include<glad/glad.h>
 #include<GLFW/glfw3.h>
 #include<stb/stb_image.h>
-#include<cmath>
+
 #include<glm/glm.hpp>
 #include<glm/gtc/type_ptr.hpp>
 #include<glm/gtc/matrix_transform.hpp>
+
 #include<utility>
+
 #include<vector>
 #include<chrono>
+#include<cmath>
+#include<iostream>
+#include<algorithm>
 
 #include"Shaders.h"
 #include"VAO.h"
@@ -23,6 +28,7 @@
 
 const int width = 1000;
 const int height = 1000;
+const GLfloat mindist = 0.1f;
 
 int main()
 {
@@ -41,11 +47,10 @@ int main()
 	gladLoadGL();
 	glViewport(0, 0, width, height);
 
-
 	Camera camera(width, height, glm::vec3(0.0f, 0.0f, 0.0f));
 
 	Sphere s1(0.3f, 5, 0, 0);
-	Sphere s2(0.3f, 5, 0, 0);
+	Sphere s2(0.3f, 5, 1, 0);
 	Sphere s3(0.3f, 5, 0, 0);
 	Grid grid1(100,3);
 	Grid axis(0, 1);
@@ -55,19 +60,26 @@ int main()
 	Shader axisshader("line.vert", "line.frag");
 	Shader shaderProgram("default.vert", "default.frag");
 	shaderProgram.Activate();
+	GLfloat* light = new GLfloat[3];
+	light[0] = 1;
+	light[1] = 1;
+	light[2] = 1;
+	//LightSource
 	double FPS = 60;
 	std::chrono::high_resolution_clock::time_point t1 = std::chrono::high_resolution_clock::now();
 	float frames = 0;
-
-	glm::vec3 velocity1 = { 0.0009f, 0.022f, 0.001f };
-	s1.ChangePosition({ 1.000f, 2.000f, 3.000f }, 0.00f, { 1,1,1 });
-	glm::vec3 velocity2 = { 0.0032f, 0.000f, 0.07f };
-	s2.ChangePosition({ 5.500f, 5.500f, 0.000f }, 0.00f, { 1,1,1 });
-	glm::vec3 velocity3 = { 0.012f, 0.000f, 0.000f };
-	s2.ChangePosition({ 0.000f, 0.000f, 1.000f }, 0.00f, { 1,1,1 });
-	velocity1 = { 0.0f, 0.0f, 0.0f };
+	
+	GraphicsObject* object;
+	glm::vec3 velocity1 = { 0.0f, 0.0f, 0.0f };
+	s1.ChangePosition({ 0.000f, 3.000f, 0.000f }, 0.00f, { 1,1,1 });
+	glm::vec3 velocity2 = { 0.0f, 0.0f, 0.0f };
+	s2.ChangePosition({ 5.500f, -5.500f, 0.000f }, 0.00f, { 1,1,1 });
+	glm::vec3 velocity3 = { 0.0f, 0.0f, 0.0 };
+	s3.ChangePosition({ -4.000f, 2.000f, 1.000f }, 0.00f, { 1,1,1 });
+	/*velocity1 = {0.0f, 0.0f, 0.0f};
 	velocity2 = { 0.0f, 0.0f, 0.0f };
-	velocity3 = { 0.0f, 0.0f, 0.0f };
+	velocity3 = { 0.0f, 0.0f, 0.0f };*/
+	bool pause = true;
 	while (!glfwWindowShouldClose(window))
 	{
 		rotation += 0.05f;
@@ -93,20 +105,52 @@ int main()
 		axis.Draw();
 		camera.Matrix(45.0f, 0.1f, 10.0f, axisshader, "camMatrix");
 		grid1.Draw();
+
 		shaderProgram.Activate();
 		camera.Matrix(45.0f, 0.1f, 10000.0f, shaderProgram, "camMatrix");
-		/*velocity1 = velocity1 + (s2.position - s1.position) * 0.0001f;
-		velocity1 = velocity1 + (s3.position - s1.position) * 0.0001f;
-		velocity2 = velocity2 + (s1.position - s2.position) * 0.0001f;
-		velocity2 = velocity2 + (s3.position - s2.position) * 0.0001f;
-		velocity3 = velocity3 + (s1.position - s3.position) * 0.0001f;
-		velocity3 = velocity3 + (s2.position - s3.position) * 0.0001f;*/
+		if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS)
+		{
+			pause = false;
+		}
+		if (glfwGetKey(window, GLFW_KEY_P) == GLFW_RELEASE)
+		{
+			pause = true;
+		}
+		if(!pause)
+		{
+			std::cout << glm::dot((s2.position - s1.position), (s2.position - s1.position))<<std::endl;
+			velocity1 = velocity1 + 0.01f * glm::normalize((s2.position - s1.position)) / std::max(glm::dot((s2.position - s1.position), (s2.position - s1.position)), mindist);
+			velocity1 = velocity1 + 0.01f * glm::normalize((s3.position - s1.position)) / std::max(glm::dot((s3.position - s1.position), (s3.position - s1.position)), mindist);
+			velocity2 = velocity2 + 0.01f * glm::normalize((s1.position - s2.position)) / std::max(glm::dot((s1.position - s2.position), (s1.position - s2.position)), mindist);
+			velocity2 = velocity2 + 0.01f * glm::normalize((s3.position - s2.position)) / std::max(glm::dot((s3.position - s2.position), (s3.position - s2.position)), mindist);
+			velocity3 = velocity3 + 0.01f * glm::normalize((s1.position - s3.position)) / std::max(glm::dot((s1.position - s3.position), (s1.position - s3.position)), mindist);
+			velocity3 = velocity3 + 0.01f * glm::normalize((s2.position - s3.position)) / std::max(glm::dot((s2.position - s3.position), (s2.position - s3.position)), mindist);
+
+			std::cout << s2.position.x << " " << s1.position.x << " " << glm::normalize((s2.position - s1.position)).x << std::endl;
+
+			s1.ChangePosition(velocity1, 0.00f, { 1,1,1 });
+			s2.ChangePosition(velocity2, 0.00f, { 1,1,1 });
+			s3.ChangePosition(velocity3, 0.00f, { 1,1,1 });
+
+		s2.ChangePosition(-s1.position, 0.0f, {1,1,1});
+		s3.ChangePosition(-s1.position, 0.0f, { 1,1,1 });
+
+		s1.ChangePosition(-s1.position, 0.0f, { 1,1,1 });
+		}
+		GLfloat* shinecolor = new GLfloat[3];
+		shinecolor[0] = 1;
+		shinecolor[1] = 1;
+		shinecolor[2] = 1;
+		GLfloat* nullvector = new GLfloat[3];
+		shinecolor[0] = 0;
+		shinecolor[1] = 0;
+		shinecolor[2] = 0;
+		glUniform3fv(glGetUniformLocation(shaderProgram.ID, "Shinecolor"), 1, shinecolor);
+		glUniform3fv(glGetUniformLocation(shaderProgram.ID, "LightSource"), 1, value_ptr(s1.position));
 		s1.Draw(shaderProgram);
-		s1.ChangePosition(velocity1, 0.0f, { 1,1,1 });
+		glUniform3fv(glGetUniformLocation(shaderProgram.ID, "Shinecolor"), 1, nullvector);
 		s2.Draw(shaderProgram);
-		s2.ChangePosition(velocity2, 0.0f, { 1,1,1 });
 		s3.Draw(shaderProgram);
-		s3.ChangePosition(velocity3, 0.0f, { 1,1,1 });
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

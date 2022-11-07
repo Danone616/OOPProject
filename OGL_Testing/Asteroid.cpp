@@ -74,7 +74,7 @@ Asteroid::Asteroid(GLfloat radius, GLint precision, int colortype, int drawtype)
 	ebo->Delete();
 };
 
-void Asteroid::Draw()
+void Asteroid::Draw(Shader& shader)
 {
 	vao->Bind();
 	if (drawType == 0)glDrawElements(GL_TRIANGLES, indicesSize, GL_UNSIGNED_INT, 0);

@@ -31,9 +31,9 @@ Sphere::Sphere(GLfloat radius,GLint precision,int colortype,int drawtype)
 		}
 		if (colorType == 1)
 		{
-			vertices[i * 3 + 3] = 0.5 + sphere.points[i] /radius;
-			vertices[i * 3 + 4] = 0.5 + sphere.points[i + 1] / radius;
-			vertices[i * 3 + 5] = 0.5 + sphere.points[i + 2] / radius;
+			vertices[i * 3 + 3] = (1.0f + sphere.points[i] / radius) / 2;
+			vertices[i * 3 + 4] = (1.0f + sphere.points[i + 1] / radius) / 2;
+			vertices[i * 3 + 5] = (1.0f + sphere.points[i + 2] / radius) / 2;
 		}
 		vertices[i * 3 + 6] = sphere.points[i] / radius;
 		vertices[i * 3 + 7] = sphere.points[i + 1] / radius;
@@ -174,6 +174,7 @@ void Sphere::Draw(Shader& shader)
 	vao->Bind();
 	glm::mat4 positionmatrix = glm::mat4(1.0f);
 	positionmatrix = glm::translate(positionmatrix, position);
+	glUniformMatrix4fv(glGetUniformLocation(shader.ID, "orientation"), 1, GL_FALSE, glm::value_ptr(orientation));
 	glUniformMatrix4fv(glGetUniformLocation(shader.ID, "objectMatrix"), 1, GL_FALSE, glm::value_ptr(positionmatrix * orientation));
 	if(drawType == 0)glDrawElements(GL_TRIANGLES, indicesSize, GL_UNSIGNED_INT, 0);
 	else if (drawType == 1)glDrawElements(GL_LINES, indicesSize, GL_UNSIGNED_INT, 0);

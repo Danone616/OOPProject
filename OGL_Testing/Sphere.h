@@ -10,8 +10,9 @@
 #include"VBO.h"
 #include"EBO.h"
 #include "Shaders.h"
+#include "GraphicsObject.h"
 
-class Sphere
+class Sphere : GraphicsObject
 {
 public:
 	struct SphereStruct

@@ -6,8 +6,9 @@
 #include"VBO.h"
 #include"EBO.h"
 #include "Sphere.h"
+#include "GraphicsObject.h"
 
-class Asteroid
+class Asteroid : GraphicsObject
 {
 public:
 	VAO* vao;
@@ -16,7 +17,7 @@ public:
 	glm::mat4 position = glm::mat4(1.0f);
 	int colorType;
 	int drawType;
-	void Draw();
+	void Draw(Shader& shader);
 	Asteroid(GLfloat radius, GLint precision, int colortype, int drawtype);
 };
 
